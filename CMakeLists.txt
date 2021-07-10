@@ -35,6 +35,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# find dependencies
+find_package(ament_cmake REQUIRED)
+# uncomment the following section in order to fill in
+# further dependencies manually.
+
 add_library(mogi_statechart SHARED
     src/chart.cpp
     src/event.cpp
@@ -85,26 +90,33 @@ install(TARGETS
     DESTINATION lib/${PROJECT_NAME}
     )
 
-# Test
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # uncomment the line when a copyright and license is not present in all source files
+  #set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # uncomment the line when this package is not in a git repo
+  #set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test
+      test/basic_test.cpp
+      test/run_test.cpp
+      test/event_test.cpp
+      test/callback_test.cpp)
+  target_link_libraries(${PROJECT_NAME}_test mogi_statechart)
+endif()
+
+ament_export_include_directories(
+  include
 )
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+ament_export_libraries(
+  ${PROJECT_NAME}
+)
+ament_export_targets(
+  export_${PROJECT_NAME}
+)
 
-enable_testing()
-
-add_executable(${PROJECT_NAME}_test
-    test/basic_test.cpp
-    test/run_test.cpp
-    test/event_test.cpp
-    test/callback_test.cpp)
-target_link_libraries(${PROJECT_NAME}_test
-    gtest_main
-    mogi_statechart)
-
-include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME}_test)
+ament_package()
