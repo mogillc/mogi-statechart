@@ -228,15 +228,6 @@ public:
 
     int eventCount() const { return events_.size(); }
 
-    //TODO: maybe this is redundent with the constructor and should be removed
-    /*
-    template<typename CallbackT>
-    void setAction(CallbackT && action)
-    {
-        action_callback_.set(std::forward<CallbackT>(action));
-    }
-    */
-
     std::shared_ptr<AbstractState> getDst() { return dst.lock(); }
 
     int getGuardCount() const { return guards.size(); }
@@ -447,7 +438,6 @@ protected:
     //virtual void actionEvent(Event* event) override;
 
 private:
-    // TODO: maybe we shouldn't allow default named chart
     explicit Chart(const std::string& n = "unknown chart"):AbstractState(n){}
 
     std::shared_ptr<Chart> getSharedPtr() { return sharedPtr<Chart>(); }
