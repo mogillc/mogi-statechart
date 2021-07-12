@@ -17,6 +17,7 @@ A UML state chart library.
     - [Syncronous (Blocking)](#syncronous--blocking-)
     - [Asyncronous (NonBlocking)](#asyncronous--nonblocking-)
   + [Trigger event](#trigger-event)
+* [ROS2](#ros2)
 * [Appendix](#appendix)
   + [Thread model](#thread-model)
       * [Limitations on Async implementation](#limitations-on-async-implementation)
@@ -190,6 +191,14 @@ e2.trigger();
 will notify event listeners on the corresponding events and call their callbacks
 (e.g. Functor supplied with the call `s1->createStateChangeCallback()`) or
 grant a transition (e.g. transition `t2` if current state is `s1`)
+
+## ROS2
+We also provide a ros2 package under branch `ros2_foxy`. As the name suggests it
+supports `foxy` distro. Other ROS2 distros are not tested but should generally work
+
+To use this package, add `mogi_statechart` as a dependency in your ROS2
+project's `package.xml`, as well as your `CMakeLists.txt`
+
 
 ## Appendix
 ### Thread model
