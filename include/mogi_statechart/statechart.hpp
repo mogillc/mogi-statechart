@@ -57,8 +57,9 @@ class MOGI_STATECHART_PUBLIC Chart;
 template<typename RetT, typename ...ArgsT>
 class Callback
 {
-    using CallbackT = std::function<RetT(ArgsT... args)>;
 public:
+    using CallbackT = std::function<RetT(ArgsT... args)>;
+
     explicit Callback(CallbackT && callback)
     : func_(std::forward<CallbackT>(callback)) {}
 
@@ -126,22 +127,17 @@ protected:
  \brief A representation of a guard in UML.
  @since 12-01-2020
  */
-class Guard
+class Guard : public Callback<bool>
 {
 public:
-    template<typename CallbackT>
-        explicit Guard(CallbackT && callback)
-        : func_(std::forward<CallbackT>(callback)) {}
+    explicit Guard(Callback::CallbackT && callback)
+        : Callback<bool>(std::forward<Callback::CallbackT>(callback)) {}
 
-    //TODO: maybe merge with template class Callback
     /*!
-     \brief User-definable guard method.
-     @return True when the guard is satisfied, false otherwise.
+     \brief Guard method, calls provided callback in constructor
+     @return Pass along the return value from user provided callback
      */
-    bool isSatisfied() {return func_();}
-
-private:
-    std::function<bool()> func_;
+    bool isSatisfied() {return Callback<bool>::invoke();}
 };
 
 /*!
