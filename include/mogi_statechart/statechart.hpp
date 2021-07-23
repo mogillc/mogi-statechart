@@ -53,6 +53,8 @@ class MOGI_STATECHART_PUBLIC Chart;
 
 /*!
  @class Callback
+ \brief A generic callback class that's wrapping a functor with
+ * type std::function<RetT(ArgsT... args)>
  */
 template<typename RetT, typename ...ArgsT>
 class Callback
@@ -64,7 +66,7 @@ public:
     : func_(std::forward<CallbackT>(callback)) {}
 
     /*!
-     \brief User-definable callback method.
+     \brief Invokes the wrapped functor
      */
     RetT invoke(ArgsT... args) const {return func_(args...);}
 
@@ -94,7 +96,7 @@ public:
     void trigger();
     void addObserver(const std::shared_ptr<EventObserver>& observer);
     void removeObserver(const std::shared_ptr<EventObserver>& observer);
-    // number of observers
+    // returns number of observers
     int observerCount() const;
 
 private:
@@ -214,7 +216,7 @@ public:
 
     void removeGuard(const std::shared_ptr<Guard>& g);
     /*!
-     \brief Adds the event that performs this transition when guards have been
+     \brief Adds an event that could trigger this transition given guards are
      satisfied.
      @param event The event that performs calls transition.
      */
