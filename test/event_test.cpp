@@ -147,7 +147,7 @@ template<>
 const std::string& EventTest<RunSubchartTest>::getName() { return tc.currentStateName; }
 
 typedef ::testing::Types<RunChartTest, RunSubchartTest> Implementation;
-TYPED_TEST_CASE(EventTest, Implementation);
+TYPED_TEST_SUITE(EventTest, Implementation,);
 
 TYPED_TEST(EventTest, spinOnce)
 {
