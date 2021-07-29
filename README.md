@@ -113,6 +113,20 @@ s1->setCallbackDo(fn_do);
 s1->setCallbackExit(fn_ex);
 ```
 
+state action functions can take any things that's a functor or function pointer,
+such as
+```cpp
+    /* lambda */
+    s1->setCallbackEntry([](){std::cout << "<s1 Entry> called!" << std::endl;});
+
+    /* function object returned by std::bind */
+    s1->setCallbackDo(std::bind(func, arg));
+
+    /* function pointer */
+    void fn_ex(void) {}
+    s1->setCallbackExit(fn_ex);
+```
+
 #### Transitions and Guards
 * create transtions t1, without action
 ```cpp

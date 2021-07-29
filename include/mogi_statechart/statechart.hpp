@@ -70,6 +70,9 @@ public:
      */
     RetT invoke(ArgsT... args) const {return func_(args...);}
 
+    /*!
+     \brief Sets internal function handle
+     */
     template<typename FuncT>
     void set(FuncT && func)
     {
@@ -91,12 +94,29 @@ public:
     Event(const std::string& n = "anonymous")
         : name_(n) {}
 
+    /*!
+     \brief Returns name of the event
+     */
     const std::string& name() const { return name_; }
 
+    /*!
+     \brief Triggers the specific event
+     */
     void trigger();
+
+    /*!
+     \brief Add an event observer to this event
+     */
     void addObserver(const std::shared_ptr<EventObserver>& observer);
+
+    /*!
+     \brief Removes an event observer from this event's observers list
+     */
     void removeObserver(const std::shared_ptr<EventObserver>& observer);
-    // returns number of observers
+
+    /*!
+     \brief Returns number of observers
+     */
     int observerCount() const;
 
 private:
@@ -166,6 +186,12 @@ private:
      */
     bool guardsSatisfied() const;
 
+    /*!
+     \brief A transition should on happen when 1. all guards are satisfied and
+     2. any events the transition is subscribed to is triggered.
+     * This method will call guardsSatisfied() internally.
+     @return true if the transition should take place
+     */
     bool shouldPerform();
 
     std::vector<std::shared_ptr<Guard>> guards;
@@ -202,9 +228,9 @@ public:
 
     /*!
      \brief Appends a Guard to the transition.
-
      This transition is blocked until all guards have been satisfied.
      @param callback Callback funtion returning the status of the guard
+     @return a reference to the appended guard in case it needs to be removed later
      */
     template<typename CallbackT>
     std::shared_ptr<Guard> createGuard(CallbackT && callback)
@@ -214,7 +240,12 @@ public:
         return g;
     }
 
+    /*!
+     \brief Removes an appended guard
+     @param g Returned from createGuard()
+     */
     void removeGuard(const std::shared_ptr<Guard>& g);
+
     /*!
      \brief Adds an event that could trigger this transition given guards are
      satisfied.
@@ -222,12 +253,25 @@ public:
      */
     bool addEvent(Event& event);
 
+    /*!
+     \brief Removes an added event
+     @param event Previously added event
+     */
     bool removeEvent(Event& event);
 
+    /*!
+     \brief Number of events this transition is subscribed to
+     */
     int eventCount() const { return events_.size(); }
 
+    /*!
+     \brief Destiny state this transition is pointing to
+     */
     std::shared_ptr<AbstractState> getDst() { return dst.lock(); }
 
+    /*!
+     \brief Number of guards on this transition
+     */
     int getGuardCount() const { return guards.size(); }
 
     //~Transition() { std::cout<<"~Transition()"<<std::endl; }
@@ -275,15 +319,29 @@ public:
      */
     void removeTransition(const std::shared_ptr<Transition> &transition);
 
-    // remove all invalid outgoing transitions due to the removal of its
-    // destine state
+    /*!
+     \brief Remove all invalid outgoing transitions due to the removal of its
+    destine state
+    */
     void purgeExpiredTransitions();
 
+    /*!
+     \brief Number of transitions coming out of this state
+    */
     int getTransistionCount() const { return outgoingTransitions.size(); }
 
+    /*!
+     \brief Check if this state is currently active in the chart
+     @return true if active
+    */
     bool isActive() const;
 
-    // add Event callback
+    /*!
+     \brief Subscribe to an event with callback
+     @param event Event to be subscribed
+     @param callback Callback to be called when the event is triggered
+     @return true on success
+    */
     template<typename CallbackT>
     bool createEventCallback(Event& event, CallbackT && callback)
     {
@@ -293,12 +351,26 @@ public:
                .second;
     }
 
+    /*!
+     \brief Removes a subscribed event
+     @param event Event to be removed
+     @return true on success
+    */
     bool removeEventCallback(Event& event);
 
+    /*!
+     \brief Number of events this state is subscribed to
+    */
     int eventCount() { return eventCallbacks.size(); }
 
+    /*!
+     \brief Travers the chart as far as neccessary to retrieve the outmost containing chart
+    */
     std::shared_ptr<Chart> outmostContainer();
 
+    /*!
+     \brief Get name of the state
+     */
     virtual const std::string& name() const {return label;}
 
 protected:
@@ -337,38 +409,77 @@ class Chart final : public AbstractState
     friend void Transition::notify(const Event& event);
 public:
     using StateChangeCallbackT = Callback<void, const std::string&>;
-    //create a new chart
+    /*!
+     \brief Creates a new state chart, which includes two automatically generated
+     states `Initial` and `Final`
+     */
     static std::shared_ptr<Chart> createChart(const std::string& n);
     ~Chart();
 
-    //create a new state in this chart with name n
+    /*!
+     \brief create a new state in this chart with name n
+     */
     std::shared_ptr<State> createState(const std::string& n);
-    // add another chart as a subchart (represented as a state)
+
+    /*!
+     \brief add another chart as a subchart (represented as a state)
+     */
     void addSubchart(const std::shared_ptr<Chart>& s);
 
-    // remove named state from this chart
+    /*!
+     \brief remove named state from this chart
+     */
     void removeState(const std::string& n);
-    // remove subchart state from this chart
+
+    /*!
+     \brief remove subchart state from this chart
+     */
     void removeState(const std::shared_ptr<AbstractState>& s);
 
+    /*!
+     \brief test if a state is contained in this chart
+     */
     bool hasState(const std::string& n);
+
+    /*!
+     \brief test if a subchart state is contained in this chart
+     */
     bool hasState(const std::shared_ptr<AbstractState>& s) { return hasState(s->name()); }
 
-    // retrieve initial state
+    /*!
+     \brief get auto-generated `Initial` state
+     */
     const std::shared_ptr<AbstractState>& getInitialState() { return states_.at("initial"); }
-    // retrieve final state
+
+    /*!
+     \brief get auto-generated `Final` state
+     */
     const std::shared_ptr<AbstractState>& getFinalState() { return states_.at("final"); }
 
+    /*!
+     \brief get active state name
+     */
     const std::string getCurrentStateName() {
         return currentState.load()->name();
     }
-    // get full qualified name of active state name, with containing
-    // subchart name as prefix if applicable
+
+    /*!
+     \brief get full qualified name of active state name, with containing
+     subchart name as prefix if applicable
+     */
     const std::string getCurrentStateNameFull() const;
 
+    /*!
+     \brief get number of states contained in this chart
+     */
     int getStateCount() const { return states_.size(); }
 
-    /* create and return a state change callback */
+    /*!
+     \brief Adds a state change callback on this chart. Upon any state transition
+     the registered callback will be called
+     @param callback Callback function to be registered
+     @return Newly added callback handle, used in removeStateChangeCallback()
+     */
     template<typename CallbackT>
     std::shared_ptr<StateChangeCallbackT>
     createStateChangeCallback(CallbackT callback) {
@@ -377,27 +488,49 @@ public:
         return c;
     }
 
-    // remove a state change callback
+    /*!
+     \brief remove a state change callback
+     @param callback Callback function to be removed, should have been returned
+     by calling createStateChangeCallback() previously
+    */
     void removeStateChangeCallback(const std::shared_ptr<StateChangeCallbackT>& c);
 
-    // start the chart process asyncronously
-    // this will start a new thread
+    /*!
+     \brief start the chart process asyncronously
+     this will start a new thread
+    */
     void spinAsync();
-    // stop updating the chart
+
+    /*!
+     \brief stop updating the chart
+    */
     void stop();
 
-    // run the state chart forever in the calling thread
+    /*!
+     \brief run the state chart forever in the calling thread
+    */
     void spin();
-    // run one step
+
+    /*!
+     \brief run one step
+    */
     void spinOnce();
-    // run the chart until it reached the specified state
+
+    /*!
+     \brief run the chart until it reached the specified state
+    */
     void spinToState(const std::string& name);
 
-    // reset the chart to initial status
-    // if the state is running asyncronously it will be stopped
-    // without a restarting
+    /*!
+     \brief reset the chart to initial status
+     if the state is running asyncronously it will be stopped
+     without a restarting
+    */
     void reset();
-    // return true is the chart is running
+
+    /*!
+     \brief return true is the chart is running
+    */
     bool isRunning() {return is_running_;}
 
     void printStates()
@@ -468,18 +601,31 @@ private:
     Callback<void> exit_callback_ {[](){}};
 
 public:
+    /*!
+     \brief Sets a callback that will be called upon entering this state for the
+     first time. This callback will only be called once
+    */
     template<typename CallbackT>
     void setCallbackEntry(CallbackT && callback)
     {
         entry_callback_.set(std::forward<CallbackT>(callback));
     }
 
+    /*!
+     \brief Sets a callback that will be called while this state is active
+     This callback will be called every time on the chart spin*() as long as
+     the state is active
+    */
     template<typename CallbackT>
     void setCallbackDo(CallbackT && callback)
     {
         do_callback_.set(std::forward<CallbackT>(callback));
     }
 
+    /*!
+     \brief Sets a callback that will be called upon exiting this state for the
+     first time. This callback will only be called once
+    */
     template<typename CallbackT>
     void setCallbackExit(CallbackT && callback)
     {
