@@ -77,7 +77,7 @@ TEST_F(CallbackTest, stateChange)
             std::bind(&CallbackTest::stateChanged,
                       this, std::placeholders::_1));
     auto callback2 = chart->createStateChangeCallback(
-            [this,&localCurrentStateName](const std::string& name)
+            [&localCurrentStateName](const std::string& name)
                       {localCurrentStateName = name;});
     ASSERT_EQ(chart->getCurrentStateName(), "initial");
 
