@@ -1,6 +1,7 @@
 # mogi_statechart
 
 [![Build Status](https://github.com/mogillc/mogi-statechart/actions/workflows/build.yml/badge.svg)](https://github.com/mogillc/mogi_statechart)
+[![ROS2 Status](https://github.com/mogillc/mogi-statechart/actions/workflows/ros.yml/badge.svg)](https://github.com/mogillc/mogi_statechart/tree/ros2_foxy)
 
 A UML state chart library.
 
