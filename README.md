@@ -1,5 +1,7 @@
 # mogi_statechart
 
+[![Build Status](https://github.com/mogillc/mogi-statechart/actions/workflows/build.yml/badge.svg)](https://github.com/mogillc/mogi_statechart)
+
 A UML state chart library.
 
 * [Intro](#intro)
