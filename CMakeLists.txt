@@ -1,19 +1,19 @@
- #############################################################################
- # Copyright 2021 Mogi LLC
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
- # 
- #     http://www.apache.org/licenses/LICENSE-2.0
- # 
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
- #
- #############################################################################
+#############################################################################
+# Copyright 2021 Mogi LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#############################################################################
 
 cmake_minimum_required(VERSION 3.5)
 project(mogi_statechart)
@@ -44,8 +44,7 @@ add_library(mogi_statechart SHARED
     src/chart.cpp
     src/event.cpp
     src/state.cpp
-    src/transition.cpp
-    )
+    src/transition.cpp)
 target_link_libraries(mogi_statechart
     pthread)
 target_include_directories(mogi_statechart PUBLIC
@@ -78,8 +77,7 @@ target_include_directories(simple PUBLIC
 target_link_libraries(simple mogi_statechart)
 install(TARGETS
     simple
-    DESTINATION lib/${PROJECT_NAME}
-    )
+    DESTINATION lib/${PROJECT_NAME})
 add_executable(nestedChart examples/nestedChart.cpp)
 target_include_directories(nestedChart PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -87,8 +85,7 @@ target_include_directories(nestedChart PUBLIC
 target_link_libraries(nestedChart mogi_statechart)
 install(TARGETS
     nestedChart
-    DESTINATION lib/${PROJECT_NAME}
-    )
+    DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

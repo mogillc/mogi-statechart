@@ -8,7 +8,6 @@
       A library for UML state chart
   </description>
 
-  <url type="website">http://www.mogi.io</url>
   <maintainer email="xiao@mogi.io">Xiao Qin</maintainer>
   <license>Apache License 2.0</license>
   <author>Matt Bunting</author>
