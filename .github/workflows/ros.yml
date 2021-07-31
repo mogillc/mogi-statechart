@@ -1,0 +1,25 @@
+name: ros
+
+on:
+  push:
+    branches: [ ros2_foxy ]
+  pull_request:
+    branches: [ ros2_foxy ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ros_distro: [ foxy ]
+
+    steps:
+      - uses: ros-tooling/setup-ros@v0.2
+        with:
+          required-ros-distributions: ${{ matrix.ros_distro }}
+      - uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          package-name: mogi_statechart
+          target-ros2-distro: ${{ matrix.ros_distro }}
+
